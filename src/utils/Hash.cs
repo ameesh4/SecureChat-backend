@@ -1,6 +1,6 @@
 using BCrypt.Net;
 
-namespace hushline.utils
+namespace SecureChat.src.utils
 {
     public static class HashUtils
     {

@@ -1,7 +1,7 @@
-using hushline.src.service.UserService;
-using hushline.src.db.repository.UserRepository;
 using dotenv.net;
-using hushline.src.db;
+using SecureChat.src.service.UserService;
+using SecureChat.src.db.repository.UserRepository;
+using SecureChat.src.db;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,14 +14,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddSwaggerGen(c =>
-    {
-        c.SwaggerDoc("v1", new() { Title = "Hushline API", Version = "v1" });
-    });
-}
-
 var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "SecureChat API V1");
+    c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+});
+
+app.MapControllers();
 
 app.Run();

@@ -1,7 +1,7 @@
 using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 
-namespace hushline.src.db
+namespace SecureChat.src.db
 {
     public static class DbConnection
     {

@@ -1,33 +1,31 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using hushline.src.db.schema;
-using hushline.src.db;
+using SecureChat.src.db.schema;
 
-namespace hushline.src.db.repository.UserRepository
+namespace SecureChat.src.db.repository.UserRepository
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(AppDbContext context) : IUserRepository
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _context = context;
 
-        public UserRepository(AppDbContext context)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
-            _context = context;
+            var user = await _context.Users.FindAsync(id);
+            return user ?? null;
         }
 
-        public async Task<User> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return await _context.Users.FindAsync(id);
-        }
-
-        public async Task<User> GetUserByEmailAsync(string email)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            User? user1 = user ?? null;
+            return user1;
         }
 
         public async Task<User> GetUserByPhoneNumberAsync(string phoneNumber)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+            return user ?? throw new KeyNotFoundException($"User with phone number {phoneNumber} not found.");
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -35,10 +33,11 @@ namespace hushline.src.db.repository.UserRepository
             return await _context.Users.ToListAsync();
         }
 
-        public async Task AddUserAsync(User user)
+        public async Task<User> AddUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
+            return user;
         }
 
         public async Task UpdateUserAsync(User user)

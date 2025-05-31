@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace hushline.src.db.schema
+namespace SecureChat.src.db.schema
 {
+    [Table("users")]
     public class User
     {
         [Key]

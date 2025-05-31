@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using hushline.src.db.schema;
+using SecureChat.src.db.schema;
 
-namespace hushline.src.db
+namespace SecureChat.src.db
 {
     public class AppDbContext : DbContext
     {

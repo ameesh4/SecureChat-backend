@@ -1,9 +1,8 @@
-using hushline.src.db.repository.UserRepository;
-using hushline.src.db.schema;
-using hushline.src.service.UserService;
-using hushline.utils;
+using SecureChat.src.db.repository.UserRepository;
+using SecureChat.src.db.schema;
+using SecureChat.src.utils;
 
-namespace hushline.src.service.UserService
+namespace SecureChat.src.service.UserService
 {
     public class UserService(IUserRepository userRepository) : IUserService
     {

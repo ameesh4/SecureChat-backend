@@ -1,7 +1,7 @@
-using hushline.src.db.schema;
+using SecureChat.src.db.schema;
 
 
-namespace hushline.src.service.UserService
+namespace SecureChat.src.service.UserService
 {
     public interface IUserService
     {
