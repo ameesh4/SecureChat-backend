@@ -18,14 +18,13 @@ namespace SecureChat.src.db.repository.UserRepository
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            User? user1 = user ?? null;
-            return user1;
+            return user ?? null;
         }
 
-        public async Task<User> GetUserByPhoneNumberAsync(string phoneNumber)
+        public async Task<User?> GetUserByPhoneNumberAsync(string phoneNumber)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
-            return user ?? throw new KeyNotFoundException($"User with phone number {phoneNumber} not found.");
+            return user ?? null;
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -33,11 +32,11 @@ namespace SecureChat.src.db.repository.UserRepository
             return await _context.Users.ToListAsync();
         }
 
-        public async Task<User> AddUserAsync(User user)
+        public async Task<bool> AddUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-            return user;
+            return true;
         }
 
         public async Task UpdateUserAsync(User user)
