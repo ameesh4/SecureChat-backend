@@ -1,10 +1,10 @@
-using SecureChat.src.db.repository.UserRepository;
-using SecureChat.src.db.schema;
-using SecureChat.src.utils;
-using SecureChat.src.api.model;
-using SecureChat.src.service.JwtService;
+using SecureChat.api.model;
+using SecureChat.db.repository.UserRepository;
+using SecureChat.db.schema;
+using SecureChat.service.JwtService;
+using SecureChat.utils;
 
-namespace SecureChat.src.service.UserService
+namespace SecureChat.service.UserService
 {
     public class UserService(IUserRepository userRepository, IJwtService jwtService) : IUserService
     {
@@ -105,6 +105,7 @@ namespace SecureChat.src.service.UserService
                 throw new UnauthorizedAccessException("Invalid password.");
             }
             var token = _jwtUtils.GenerateToken(existingUser.Id.ToString());
+            existingUser.RefreshToken = token;
             if (string.IsNullOrEmpty(token))
             {
                 throw new InvalidOperationException("Failed to generate token.");

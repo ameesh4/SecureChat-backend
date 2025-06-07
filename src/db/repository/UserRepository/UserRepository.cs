@@ -1,9 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using SecureChat.src.db.schema;
+using SecureChat.db.schema;
 
-namespace SecureChat.src.db.repository.UserRepository
+namespace SecureChat.db.repository.UserRepository
 {
     public class UserRepository(AppDbContext context) : IUserRepository
     {

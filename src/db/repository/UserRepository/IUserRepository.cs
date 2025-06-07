@@ -1,6 +1,6 @@
-using SecureChat.src.db.schema;
+using SecureChat.db.schema;
 
-namespace SecureChat.src.db.repository.UserRepository
+namespace SecureChat.db.repository.UserRepository
 {
     public interface IUserRepository
     {

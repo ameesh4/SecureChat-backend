@@ -1,14 +1,11 @@
-using System;
-using System.Threading.Tasks;
-using SecureChat.src.db.schema;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using SecureChat.src.db.repository.UserRepository;
+using SecureChat.db.repository.UserRepository;
+using SecureChat.db.schema;
 
-
-namespace SecureChat.src.service.JwtService
+namespace SecureChat.service.JwtService
 {
     public class JwtService(IUserRepository userRepository) : IJwtService
     {

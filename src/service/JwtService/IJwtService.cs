@@ -1,7 +1,6 @@
-using System.Threading.Tasks;
-using SecureChat.src.db.schema;
+using SecureChat.db.schema;
 
-namespace SecureChat.src.service.JwtService
+namespace SecureChat.service.JwtService
 {
     public interface IJwtService
     {

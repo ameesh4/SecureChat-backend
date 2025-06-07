@@ -1,21 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
-using SecureChat.src.service.UserService;
-using SecureChat.src.db.schema;
-using SecureChat.src.api.model;
+using SecureChat.api.model;
+using SecureChat.service.UserService;
 
-
-namespace SecureChat.src.api.controller.v1.UserController
+namespace SecureChat.api.controller.v1.UserController
 {
     [ApiController]
     [Route("api/v1/user")]
     public class UserController(IUserService userService) : ControllerBase, IUserController
     {
-        public IUserService _userService = userService;
+        private readonly IUserService _userService = userService;
 
         [HttpPost("login/email")]
         public Task<IActionResult> LoginEmailAsync([FromBody] UserLoginEmail user)
         {
-            if (user == null || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+            if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
             {
                 return Task.FromResult<IActionResult>(new BadRequestObjectResult(new
                 {
@@ -46,7 +44,7 @@ namespace SecureChat.src.api.controller.v1.UserController
         [HttpPost("login/phone")]
         public Task<IActionResult> LoginPhoneNumberAsync([FromBody] UserLoginPhone user)
         {
-            if (user == null || string.IsNullOrEmpty(user.PhoneNumber) || string.IsNullOrEmpty(user.Password))
+            if (user.Equals(null) || string.IsNullOrEmpty(user.PhoneNumber) || string.IsNullOrEmpty(user.Password))
             {
                 return Task.FromResult<IActionResult>(new BadRequestObjectResult(new
                 {
@@ -77,7 +75,7 @@ namespace SecureChat.src.api.controller.v1.UserController
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] Register user)
         {
-            if (user == null)
+            if (user.Equals(null))
             {
                 return new BadRequestObjectResult("User cannot be null");
             }

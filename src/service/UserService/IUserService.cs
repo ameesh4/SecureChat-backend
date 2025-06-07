@@ -1,8 +1,7 @@
-using SecureChat.src.db.schema;
-using SecureChat.src.api.model;
+using SecureChat.api.model;
+using SecureChat.db.schema;
 
-
-namespace SecureChat.src.service.UserService
+namespace SecureChat.service.UserService
 {
     public interface IUserService
     {

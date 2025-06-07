@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SecureChat.src.db.schema
+namespace SecureChat.db.schema
 {
     [Table("users")]
     public class User

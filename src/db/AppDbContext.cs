@@ -1,15 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using SecureChat.src.db.schema;
+using SecureChat.db.schema;
 
-namespace SecureChat.src.db
+namespace SecureChat.db
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<User> Users { get; set; }
     }
 }

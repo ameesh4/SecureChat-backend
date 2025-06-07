@@ -1,8 +1,8 @@
 using dotenv.net;
-using SecureChat.src.service.UserService;
-using SecureChat.src.db.repository.UserRepository;
-using SecureChat.src.service.JwtService;
-using SecureChat.src.db;
+using SecureChat.db;
+using SecureChat.db.repository.UserRepository;
+using SecureChat.service.JwtService;
+using SecureChat.service.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 

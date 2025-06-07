@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SecureChat.src.service.UserService;
-using SecureChat.src.db.schema;
-using SecureChat.src.api.model;
+using SecureChat.api.model;
 
-namespace SecureChat.src.api.controller.v1.UserController
+namespace SecureChat.api.controller.v1.UserController
 {
     public interface IUserController
     {

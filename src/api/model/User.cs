@@ -1,7 +1,7 @@
 
-using SecureChat.src.db.schema;
+using SecureChat.db.schema;
 
-namespace SecureChat.src.api.model
+namespace SecureChat.api.model
 {
     public class UserLoginEmail
     {
