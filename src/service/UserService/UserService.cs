@@ -11,7 +11,7 @@ namespace SecureChat.src.service.UserService
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IJwtService _jwtUtils = jwtService;
 
-        async Task<bool> IUserService.RegisterAsync(User user)
+        async Task<bool> IUserService.RegisterAsync(Register user)
         {
             if (!string.IsNullOrEmpty(user.Email))
             {
@@ -34,13 +34,20 @@ namespace SecureChat.src.service.UserService
             {
                 throw new ArgumentException("Name and Password are required fields.");
             }
-            user.Password = HashUtils.HashPassword(user.Password);
-            user.UpdatedAt = DateTime.UtcNow;
-            await _userRepository.AddUserAsync(user);
+            var userDb = new User
+            {
+                Name = user.Name,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Password = HashUtils.HashPassword(user.Password),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            await _userRepository.AddUserAsync(userDb);
             return true;
         }
 
-        public Task<LoginResponse> LoginEmailAsync(UserLogin user)
+        public Task<LoginResponse> LoginEmailAsync(UserLoginEmail user)
         {
             if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
             {
@@ -75,9 +82,39 @@ namespace SecureChat.src.service.UserService
             });
         }
 
-        public Task<User> LoginPhoneNumberAsync(string phoneNumber, string password)
+        public Task<LoginResponse> LoginPhoneNumberAsync(UserLoginPhone user)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(user.PhoneNumber) || string.IsNullOrEmpty(user.Password))
+            {
+                throw new ArgumentException("Phone number and Password are required for login.");
+            }
+
+            var existingUser = _userRepository.GetUserByPhoneNumberAsync(user.PhoneNumber).Result;
+            if (existingUser == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
+            if (string.IsNullOrEmpty(existingUser.Password))
+            {
+                throw new InvalidOperationException("User password is not set.");
+            }
+
+            if (!HashUtils.VerifyPassword(user.Password, existingUser.Password))
+            {
+                throw new UnauthorizedAccessException("Invalid password.");
+            }
+            var token = _jwtUtils.GenerateToken(existingUser.Id.ToString());
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new InvalidOperationException("Failed to generate token.");
+            }
+            existingUser.Password = null; // Clear password before returning
+            return Task.FromResult(new LoginResponse
+            {
+                User = existingUser,
+                Token = token
+            });
         }
 
         public Task<User> GetUserByIdAsync(int id)

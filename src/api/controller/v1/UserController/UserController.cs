@@ -7,31 +7,13 @@ using SecureChat.src.api.model;
 namespace SecureChat.src.api.controller.v1.UserController
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/user")]
     public class UserController(IUserService userService) : ControllerBase, IUserController
     {
         public IUserService _userService = userService;
 
-        [HttpGet("/get/email/{email}")]
-        public Task<IActionResult> GetUserByEmailAsync(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("/get/{id}")]
-        public Task<IActionResult> GetUserByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("/get/phone/{phoneNumber}")]
-        public Task<IActionResult> GetUserByPhoneNumberAsync(string phoneNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPost("/login/email")]
-        public Task<IActionResult> LoginEmailAsync([FromBody] UserLogin user)
+        [HttpPost("login/email")]
+        public Task<IActionResult> LoginEmailAsync([FromBody] UserLoginEmail user)
         {
             if (user == null || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
             {
@@ -61,14 +43,39 @@ namespace SecureChat.src.api.controller.v1.UserController
             }
         }
 
-        [HttpPost("/login/phone")]
-        public Task<IActionResult> LoginPhoneNumberAsync([FromBody] UserLogin user)
+        [HttpPost("login/phone")]
+        public Task<IActionResult> LoginPhoneNumberAsync([FromBody] UserLoginPhone user)
         {
-            throw new NotImplementedException();
+            if (user == null || string.IsNullOrEmpty(user.PhoneNumber) || string.IsNullOrEmpty(user.Password))
+            {
+                return Task.FromResult<IActionResult>(new BadRequestObjectResult(new
+                {
+                    error = new
+                    {
+                        message = "Email and Password are required for login."
+                    }
+                }));
+            }
+
+            try
+            {
+                var loginResponse = _userService.LoginPhoneNumberAsync(user).Result;
+                return Task.FromResult<IActionResult>(new OkObjectResult(loginResponse));
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult<IActionResult>(new BadRequestObjectResult(new
+                {
+                    error = new
+                    {
+                        message = ex.Message
+                    }
+                }));
+            }
         }
 
-        [HttpPost("/register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] User user)
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterAsync([FromBody] Register user)
         {
             if (user == null)
             {
@@ -104,12 +111,9 @@ namespace SecureChat.src.api.controller.v1.UserController
                     message = "User registered successfully.",
                     user = new
                     {
-                        user.Id,
                         user.Name,
                         user.PhoneNumber,
                         user.Email,
-                        user.CreatedAt,
-                        user.UpdatedAt
                     }
                 });
             }

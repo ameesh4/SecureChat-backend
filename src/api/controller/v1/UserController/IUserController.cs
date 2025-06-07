@@ -9,11 +9,8 @@ namespace SecureChat.src.api.controller.v1.UserController
 {
     public interface IUserController
     {
-        Task<IActionResult> RegisterAsync(User user);
-        Task<IActionResult> LoginEmailAsync([FromBody] UserLogin user);
-        Task<IActionResult> LoginPhoneNumberAsync([FromBody] UserLogin user);
-        Task<IActionResult> GetUserByIdAsync(int id);
-        Task<IActionResult> GetUserByEmailAsync(string email);
-        Task<IActionResult> GetUserByPhoneNumberAsync(string phoneNumber);
+        Task<IActionResult> RegisterAsync(Register user);
+        Task<IActionResult> LoginEmailAsync([FromBody] UserLoginEmail user);
+        Task<IActionResult> LoginPhoneNumberAsync([FromBody] UserLoginPhone user);
     }
 }
