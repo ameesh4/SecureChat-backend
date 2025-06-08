@@ -1,13 +1,13 @@
-using SecureChat.src.db.schema;
+using SecureChat.api.model;
+using SecureChat.db.schema;
 
-
-namespace SecureChat.src.service.UserService
+namespace SecureChat.service.UserService
 {
     public interface IUserService
     {
-        Task<User> RegisterAsync(User user);
-        Task<User> LoginEmailAsync(string email, string password);
-        Task<User> LoginPhoneNumberAsync(string phoneNumber, string password);
+        Task<bool> RegisterAsync(Register user);
+        Task<LoginResponse> LoginEmailAsync(UserLoginEmail user);
+        Task<LoginResponse> LoginPhoneNumberAsync(UserLoginPhone user);
         Task<User> GetUserByIdAsync(int id);
         Task<User> GetUserByEmailAsync(string email);
         Task<User> GetUserByPhoneNumberAsync(string phoneNumber);

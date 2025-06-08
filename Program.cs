@@ -1,7 +1,8 @@
 using dotenv.net;
-using SecureChat.src.service.UserService;
-using SecureChat.src.db.repository.UserRepository;
-using SecureChat.src.db;
+using SecureChat.db;
+using SecureChat.db.repository.UserRepository;
+using SecureChat.service.JwtService;
+using SecureChat.service.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 var app = builder.Build();
 

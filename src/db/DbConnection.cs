@@ -1,7 +1,7 @@
 using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 
-namespace SecureChat.src.db
+namespace SecureChat.db
 {
     public static class DbConnection
     {

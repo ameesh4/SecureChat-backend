@@ -1,6 +1,4 @@
-using BCrypt.Net;
-
-namespace SecureChat.src.utils
+namespace SecureChat.utils
 {
     public static class HashUtils
     {

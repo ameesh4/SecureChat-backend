@@ -1,56 +1,81 @@
 using Microsoft.AspNetCore.Mvc;
-using SecureChat.src.service.UserService;
-using SecureChat.src.db.schema;
+using SecureChat.api.model;
+using SecureChat.service.UserService;
 
-
-namespace SecureChat.src.api.controller.v1.UserController
+namespace SecureChat.api.controller.v1.UserController
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/user")]
     public class UserController(IUserService userService) : ControllerBase, IUserController
     {
-        public IUserService _userService = userService;
+        private readonly IUserService _userService = userService;
 
-        [HttpGet("/get/all")]
-        public Task<IActionResult> GetAllUsersAsync()
+        [HttpPost("login/email")]
+        public Task<IActionResult> LoginEmailAsync([FromBody] UserLoginEmail user)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+            {
+                return Task.FromResult<IActionResult>(new BadRequestObjectResult(new
+                {
+                    error = new
+                    {
+                        message = "Email and Password are required for login."
+                    }
+                }));
+            }
+
+            try
+            {
+                var loginResponse = _userService.LoginEmailAsync(user).Result;
+                return Task.FromResult<IActionResult>(new OkObjectResult(loginResponse));
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult<IActionResult>(new BadRequestObjectResult(new
+                {
+                    error = new
+                    {
+                        message = ex.Message
+                    }
+                }));
+            }
         }
 
-        [HttpGet("/get/email/{email}")]
-        public Task<IActionResult> GetUserByEmailAsync(string email)
+        [HttpPost("login/phone")]
+        public Task<IActionResult> LoginPhoneNumberAsync([FromBody] UserLoginPhone user)
         {
-            throw new NotImplementedException();
+            if (user.Equals(null) || string.IsNullOrEmpty(user.PhoneNumber) || string.IsNullOrEmpty(user.Password))
+            {
+                return Task.FromResult<IActionResult>(new BadRequestObjectResult(new
+                {
+                    error = new
+                    {
+                        message = "Email and Password are required for login."
+                    }
+                }));
+            }
+
+            try
+            {
+                var loginResponse = _userService.LoginPhoneNumberAsync(user).Result;
+                return Task.FromResult<IActionResult>(new OkObjectResult(loginResponse));
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult<IActionResult>(new BadRequestObjectResult(new
+                {
+                    error = new
+                    {
+                        message = ex.Message
+                    }
+                }));
+            }
         }
 
-        [HttpGet("/get/{id}")]
-        public Task<IActionResult> GetUserByIdAsync(int id)
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterAsync([FromBody] Register user)
         {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("/get/phone/{phoneNumber}")]
-        public Task<IActionResult> GetUserByPhoneNumberAsync(string phoneNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPost("/login/email")]
-        public Task<IActionResult> LoginEmailAsync(string email, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPost("/login/phone")]
-        public Task<IActionResult> LoginPhoneNumberAsync(string phoneNumber, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPost("/register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] User user)
-        {
-            if (user == null)
+            if (user.Equals(null))
             {
                 return new BadRequestObjectResult("User cannot be null");
             }
@@ -68,8 +93,27 @@ namespace SecureChat.src.api.controller.v1.UserController
 
             try
             {
-                var registeredUser = await _userService.RegisterAsync(user);
-                return new OkObjectResult(registeredUser);
+                var isRegister = await _userService.RegisterAsync(user);
+                if (!isRegister)
+                {
+                    return new BadRequestObjectResult(new
+                    {
+                        error = new
+                        {
+                            message = "User registration failed."
+                        }
+                    });
+                }
+                return new OkObjectResult(new
+                {
+                    message = "User registered successfully.",
+                    user = new
+                    {
+                        user.Name,
+                        user.PhoneNumber,
+                        user.Email,
+                    }
+                });
             }
             catch (Exception ex)
             {
