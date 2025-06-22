@@ -69,11 +69,14 @@ namespace SecureChat.service.UserService
             {
                 throw new UnauthorizedAccessException("Invalid password.");
             }
+            var refreshToken = _jwtUtils.GenerateRefreshToken(existingUser.Id.ToString());
             var token = _jwtUtils.GenerateToken(existingUser.Id.ToString());
+            existingUser.RefreshToken = refreshToken;
             if (string.IsNullOrEmpty(token))
             {
                 throw new InvalidOperationException("Failed to generate token.");
             }
+            _userRepository.UpdateUserAsync(existingUser).Wait(); 
             existingUser.Password = null; // Clear password before returning
             return Task.FromResult(new LoginResponse
             {
