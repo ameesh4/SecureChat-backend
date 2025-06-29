@@ -1,0 +1,41 @@
+package handler
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+type ResponseHandler struct {
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+func SuccessResponse(message string, data interface{}, w http.ResponseWriter, status int) {
+	response := ResponseHandler{
+		Status:  "success",
+		Message: message,
+		Data:    data,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
+func ErrorResponse(message string, w http.ResponseWriter, status int) {
+	response := ResponseHandler{
+		Status:  "error",
+		Message: message,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+		return
+	}
+}
