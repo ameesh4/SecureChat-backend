@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm/logger"
 	"log"
 	"os"
+	"securechat/backend/src/db/schema"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -34,14 +35,19 @@ func createPostgresPool(connectionString string) (*gorm.DB, error) {
 var DB *gorm.DB
 
 func InitDB() error {
-	err := godotenv.Load()
+	var err error
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 	connectionString := os.Getenv("DATABASE_URL")
-	DB, err := createPostgresPool(connectionString)
+	DB, err = createPostgresPool(connectionString)
 	if err != nil {
 		log.Fatalf("Error creating database connection: %v", err)
+	}
+	err = DB.AutoMigrate(schema.User{})
+	if err != nil {
+		log.Fatalf("Error during database migration: %v", err)
 	}
 	if DB == nil {
 		log.Fatal("Database connection is nil")

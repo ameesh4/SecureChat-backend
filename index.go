@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"securechat/backend/src/controller/routes"
 	"securechat/backend/src/db"
 )
 
@@ -19,7 +20,8 @@ func main() {
 	if err := db.InitDB(); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
-	http.HandleFunc("/hello", helloHandler)
+	handler := routes.Router()
+	handler.HandleFunc("/", helloHandler)
 	log.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", handler))
 }

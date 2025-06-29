@@ -45,6 +45,9 @@ func GetUserByID(id uint) (*schema.User, error) {
 }
 
 func UpdateUser(user *schema.User) (*schema.User, error) {
+	if user == nil {
+		return nil, nil
+	}
 	result := db.DB.Save(user)
 	if result.Error != nil {
 		return nil, result.Error
