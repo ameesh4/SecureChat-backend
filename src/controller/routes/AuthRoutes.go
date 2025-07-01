@@ -20,5 +20,7 @@ func AuthRoutes(w http.ResponseWriter, r *http.Request, path string) {
 			return
 		}
 		api.Login(w, r)
+	default:
+		http.NotFound(w, r)
 	}
 }

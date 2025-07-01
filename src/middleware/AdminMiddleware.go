@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"os"
 	"securechat/backend/src/db/repository"
+	"securechat/backend/src/handler"
 	"securechat/backend/src/service"
 )
 
-func AuthMiddleware(next http.Handler) http.Handler {
+func AdminMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		token := r.Header.Get("Authorization")
@@ -22,23 +23,27 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		if err != nil {
 			id, err := jwtService.ExtractUserIdFromToken(token)
 			if err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				handler.ErrorResponse("Unauthorized", w, http.StatusUnauthorized)
 				return
 			}
 			user, err := repository.GetUserByID(id)
 			if err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				handler.ErrorResponse("Unauthorized", w, http.StatusUnauthorized)
+				return
+			}
+			if !user.IsAdmin {
+				handler.ErrorResponse("Admin Only", w, http.StatusForbidden)
 				return
 			}
 			ctx = context.WithValue(r.Context(), "user", user)
 			_, err = jwtService.ValidateRefreshToken(user.RefreshToken)
 			if err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				handler.ErrorResponse("Unauthorized", w, http.StatusUnauthorized)
 				return
 			}
 			token, err = jwtService.GenerateToken(user.Id)
 			if err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				handler.ErrorResponse("Unauthorized", w, http.StatusUnauthorized)
 				return
 			}
 			w.Header().Set("Authorization", token)

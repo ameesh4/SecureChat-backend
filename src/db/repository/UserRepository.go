@@ -70,3 +70,15 @@ func DeleteUser(id uint) error {
 
 	return nil
 }
+
+func GetAllUsers() ([]schema.User, error) {
+	var users []schema.User
+	result := db.DB.Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return []schema.User{}, nil
+	}
+	return users, nil
+}
