@@ -11,7 +11,6 @@ import (
 
 func AdminMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
 		token := r.Header.Get("Authorization")
 		if token == "" {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -23,32 +22,50 @@ func AdminMiddleware(next http.Handler) http.Handler {
 		if err != nil {
 			id, err := jwtService.ExtractUserIdFromToken(token)
 			if err != nil {
-				handler.ErrorResponse("Unauthorized", w, http.StatusUnauthorized)
+				handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
 				return
 			}
 			user, err := repository.GetUserByID(id)
 			if err != nil {
-				handler.ErrorResponse("Unauthorized", w, http.StatusUnauthorized)
+				handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
 				return
 			}
 			if !user.IsAdmin {
-				handler.ErrorResponse("Admin Only", w, http.StatusForbidden)
+				handler.ErrorResponse("Admin Only", &err, w, http.StatusForbidden)
 				return
 			}
-			ctx = context.WithValue(r.Context(), "user", user)
+			ctx := context.WithValue(r.Context(), UserContextKey, user)
 			_, err = jwtService.ValidateRefreshToken(user.RefreshToken)
 			if err != nil {
-				handler.ErrorResponse("Unauthorized", w, http.StatusUnauthorized)
+				handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
 				return
 			}
 			token, err = jwtService.GenerateToken(user.Id)
 			if err != nil {
-				handler.ErrorResponse("Unauthorized", w, http.StatusUnauthorized)
+				handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
 				return
 			}
 			w.Header().Set("Authorization", token)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		} else {
+			// Token is valid, get user from token and set in context
+			id, err := jwtService.ExtractUserIdFromToken(token)
+			if err != nil {
+				handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
+				return
+			}
+			user, err := repository.GetUserByID(id)
+			if err != nil {
+				handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
+				return
+			}
+			if !user.IsAdmin {
+				handler.ErrorResponse("Admin Only", &err, w, http.StatusForbidden)
+				return
+			}
+			ctx := context.WithValue(r.Context(), UserContextKey, user)
+			w.Header().Set("Authorization", token)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		}
-		w.Header().Set("Authorization", token)
-		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

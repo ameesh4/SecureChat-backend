@@ -31,22 +31,11 @@ func RegisterUser(user *schema.User) (*schema.User, error) {
 		}
 	}
 
-	if user.PhoneNumber != "" {
-		existingUser, _ := repository.GetUserByPhoneNumber(user.PhoneNumber)
-		if existingUser != nil {
-			return nil, errors.New("user with this phone number already exists")
-		}
-	}
-
-	if user.Email == "" && user.PhoneNumber == "" {
-		return nil, errors.New("either email or phone number must be provided")
+	if user.Email == "" {
+		return nil, errors.New("email must be provided")
 	}
 	if user.Email != "" && !utils.ValidEmail(user.Email) {
 		return nil, errors.New("invalid email format")
-	}
-
-	if user.PhoneNumber != "" && !utils.ValidPhoneNumber(user.PhoneNumber) {
-		return nil, errors.New("invalid phone number format")
 	}
 
 	if user.Password == "" {
@@ -68,8 +57,8 @@ func RegisterUser(user *schema.User) (*schema.User, error) {
 }
 
 func (a *AuthService) AuthenticateUser(user model.LoginRequest) (*model.LoginResponse, error) {
-	if user.Email == "" || user.Password == "" {
-		return nil, errors.New("email or phone number and password cannot be empty")
+	if user.Email == "" && user.Password == "" {
+		return nil, errors.New("email and password cannot be empty")
 	}
 
 	var existingUser *schema.User
@@ -77,14 +66,6 @@ func (a *AuthService) AuthenticateUser(user model.LoginRequest) (*model.LoginRes
 	if utils.ValidEmail(user.Email) {
 		var err error
 		existingUser, err = repository.GetUserByEmail(user.Email)
-		if err != nil {
-			return nil, errors.New("user not found")
-		}
-	}
-
-	if utils.ValidPhoneNumber(user.PhoneNumber) {
-		var err error
-		existingUser, err = repository.GetUserByPhoneNumber(user.PhoneNumber)
 		if err != nil {
 			return nil, errors.New("user not found")
 		}

@@ -16,10 +16,8 @@ func GetAllUsers() ([]AllUserResponse, error) {
 	users, err := repository.GetAllUsers()
 	for _, user := range users {
 		filteredUsers = append(filteredUsers, AllUserResponse{
-			Id:          user.Id,
-			Name:        user.Name,
-			Email:       user.Email,
-			PhoneNumber: user.PhoneNumber,
+			Id:    user.Id,
+			Email: user.Email,
 		})
 	}
 	if err != nil {
