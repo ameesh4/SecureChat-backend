@@ -23,6 +23,7 @@ func Router() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/auth/", apiRouter)
 	mux.Handle("/api/v1/backend/", Chain(middleware.AuthMiddleware)(http.HandlerFunc(apiRouter)))
+	mux.Handle("/api/v1/admin/", Chain(middleware.AdminMiddleware)(http.HandlerFunc(apiRouter)))
 
 	return mux
 }
@@ -32,5 +33,7 @@ func apiRouter(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case strings.HasPrefix(path, "/auth"):
 		AuthRoutes(w, r, strings.TrimPrefix(path, "/auth"))
+	case strings.HasPrefix(path, "/admin"):
+		AdminRoutes(w, r, strings.TrimPrefix(path, "/admin"))
 	}
 }

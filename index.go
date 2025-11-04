@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"securechat/backend/src/controller/routes"
 	"securechat/backend/src/db"
+	"securechat/backend/src/middleware"
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +22,8 @@ func main() {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	handler := routes.Router()
+	middleware := middleware.CorsMiddleware(handler)
 	handler.HandleFunc("/", helloHandler)
 	log.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Fatal(http.ListenAndServe(":8080", middleware))
 }

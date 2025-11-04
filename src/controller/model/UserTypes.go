@@ -12,3 +12,15 @@ type LoginRequest struct {
 	PhoneNumber string `json:"phone_number"`
 	Password    string `json:"password"`
 }
+
+type RegisterRequest struct {
+	PhoneNumber string `json:"phone_number"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+}
+
+type UpdateUserRequest struct {
+	PhoneNumber string `json:"phone_number"`
+	Email       string `json:"email"`
+	WorkspaceId string `json:"workspace_id"`
+}

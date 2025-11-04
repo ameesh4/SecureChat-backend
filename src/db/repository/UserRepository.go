@@ -24,16 +24,6 @@ func GetUserByEmail(email string) (*schema.User, error) {
 	return &user, nil
 }
 
-func GetUserByPhoneNumber(phoneNumber string) (*schema.User, error) {
-	var user schema.User
-	result := db.DB.Where("phone_number = ?", phoneNumber).First(&user)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return &user, nil
-}
-
 func GetUserByID(id uint) (*schema.User, error) {
 	var user schema.User
 	result := db.DB.First(&user, id)
@@ -69,4 +59,16 @@ func DeleteUser(id uint) error {
 	}
 
 	return nil
+}
+
+func GetAllUsers() ([]schema.User, error) {
+	var users []schema.User
+	result := db.DB.Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return []schema.User{}, nil
+	}
+	return users, nil
 }

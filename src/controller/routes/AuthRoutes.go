@@ -20,5 +20,13 @@ func AuthRoutes(w http.ResponseWriter, r *http.Request, path string) {
 			return
 		}
 		api.Login(w, r)
+	case strings.HasPrefix(path, "/verify"):
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		api.ValidateToken(w, r)
+	default:
+		http.NotFound(w, r)
 	}
 }

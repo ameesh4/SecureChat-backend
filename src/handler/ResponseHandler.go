@@ -6,14 +6,15 @@ import (
 )
 
 type ResponseHandler struct {
-	Status  string      `json:"status"`
+	Status  bool        `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
+	Error   string      `json:"error,omitempty"`
 }
 
 func SuccessResponse(message string, data interface{}, w http.ResponseWriter, status int) {
 	response := ResponseHandler{
-		Status:  "success",
+		Status:  true,
 		Message: message,
 		Data:    data,
 	}
@@ -26,10 +27,11 @@ func SuccessResponse(message string, data interface{}, w http.ResponseWriter, st
 	}
 }
 
-func ErrorResponse(message string, w http.ResponseWriter, status int) {
+func ErrorResponse(message string, error *error, w http.ResponseWriter, status int) {
 	response := ResponseHandler{
-		Status:  "error",
+		Status:  false,
 		Message: message,
+		Error:   (*error).Error(),
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
