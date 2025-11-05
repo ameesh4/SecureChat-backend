@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"securechat/backend/src/controller/routes"
 	"securechat/backend/src/db"
+	"securechat/backend/src/handler"
 	"securechat/backend/src/middleware"
 )
 
@@ -21,9 +22,19 @@ func main() {
 	if err := db.InitDB(); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
-	handler := routes.Router()
-	middleware := middleware.CorsMiddleware(handler)
-	handler.HandleFunc("/", helloHandler)
+	socketServer := handler.InitializeSocket()
+	defer socketServer.Close()
+
+	mainMux := http.NewServeMux()
+
+	// Register socket.io handler with CORS middleware for initial HTTP handshake
+	mainMux.Handle("/socket.io/", middleware.CorsMiddleware(socketServer.Server))
+
+	// Register API routes with CORS middleware
+	apiRouter := routes.Router()
+	apiRouter.HandleFunc("/", helloHandler)
+	mainMux.Handle("/", middleware.CorsMiddleware(apiRouter))
+
 	log.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", middleware))
+	log.Fatal(http.ListenAndServe(":8080", mainMux))
 }
