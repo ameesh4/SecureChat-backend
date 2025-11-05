@@ -17,6 +17,7 @@ type RegisterRequest struct {
 	PhoneNumber string `json:"phone_number"`
 	Email       string `json:"email"`
 	Password    string `json:"password"`
+	PublicKey   string `json:"public_key"`
 }
 
 type UpdateUserRequest struct {

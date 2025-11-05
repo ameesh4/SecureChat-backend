@@ -24,8 +24,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 	var userSchema schema.User = schema.User{
-		Email:    user.Email,
-		Password: user.Password,
+		Email:     user.Email,
+		Password:  user.Password,
+		PublicKey: user.PublicKey,
 	}
 
 	response, err := service.RegisterUser(&userSchema)
