@@ -1,11 +1,12 @@
 package db
 
 import (
-	"github.com/joho/godotenv"
-	"gorm.io/gorm/logger"
 	"log"
 	"os"
 	"securechat/backend/src/db/schema"
+
+	"github.com/joho/godotenv"
+	"gorm.io/gorm/logger"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -45,7 +46,7 @@ func InitDB() error {
 	if err != nil {
 		log.Fatalf("Error creating database connection: %v", err)
 	}
-	err = DB.AutoMigrate(schema.User{})
+	err = DB.AutoMigrate(schema.User{}, schema.ChatSession{}, schema.ChatMessage{})
 	if err != nil {
 		log.Fatalf("Error during database migration: %v", err)
 	}

@@ -28,7 +28,7 @@ func main() {
 	mainMux := http.NewServeMux()
 
 	// Register socket.io handler with CORS middleware for initial HTTP handshake
-	mainMux.Handle("/socket.io/", middleware.CorsMiddleware(socketServer.Server))
+	mainMux.Handle("/socket.io/", middleware.CorsMiddleware(socketServer.Server.ServeHandler(nil)))
 
 	// Register API routes with CORS middleware
 	apiRouter := routes.Router()
