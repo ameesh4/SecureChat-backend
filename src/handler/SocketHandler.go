@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"securechat/backend/src/controller/model"
+	"securechat/backend/src/service"
 
 	socketio "github.com/zishang520/socket.io/v2/socket"
 )
@@ -30,6 +33,27 @@ func InitializeSocket() *SocketServer {
 				msg := args[0].(string)
 				fmt.Println("📩 Message received:", msg)
 				client.Emit("reply", "Server received: "+msg)
+			}
+		})
+
+		client.On("auth", func(args ...any) {
+			if len(args) > 0 {
+				var authRequest model.AuthRequest
+				msg := args[0].(string)
+				// msg = strings.TrimSpace(msg)
+				err := json.Unmarshal([]byte(msg), &authRequest)
+				if err != nil {
+					fmt.Println("❌ Error decoding auth request:", err)
+					return
+				}
+				fmt.Println("✅ Auth request received:", authRequest.Token)
+				user, err := service.ValidateTokenSocket(authRequest.Token)
+				if err != nil {
+					client.Emit("auth_error", err.Error())
+					client.Disconnect(true)
+					return
+				}
+				client.Emit("auth_success", user)
 			}
 		})
 

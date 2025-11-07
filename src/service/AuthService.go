@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"log"
+	"os"
 	"securechat/backend/src/controller/model"
 	"securechat/backend/src/db/repository"
 	"securechat/backend/src/db/schema"
@@ -113,4 +114,52 @@ func (a *AuthService) AuthenticateUser(user model.LoginRequest) (*model.LoginRes
 	existingUser.RefreshToken = ""
 	response.User = *existingUser
 	return response, nil
+}
+
+func ValidateTokenSocket(token string) (*schema.User, error) {
+	if token == "" {
+		return nil, errors.New("token cannot be empty")
+	}
+	user, err := ValidateToken(token)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = ""
+	user.RefreshToken = ""
+	return user, nil
+}
+
+func ValidateToken(token string) (*schema.User, error) {
+	jwtService := NewJWTService([]byte(os.Getenv("JWT_SECRET_KEY")), "securechat")
+	_, err := jwtService.ValidateToken(token)
+	if err != nil {
+		id, err := jwtService.ExtractUserIdFromToken(token)
+		if err != nil {
+			return nil, err
+		}
+		user, err := repository.GetUserByID(id)
+		if err != nil {
+			return nil, err
+		}
+		_, err = jwtService.ValidateRefreshToken(user.RefreshToken)
+		if err != nil {
+			return nil, err
+		}
+		token, err = jwtService.GenerateToken(user.Id)
+		if err != nil {
+			return nil, err
+		}
+		return user, nil
+	} else {
+		// Token is valid, get user from token and set in context
+		id, err := jwtService.ExtractUserIdFromToken(token)
+		if err != nil {
+			return nil, err
+		}
+		user, err := repository.GetUserByID(id)
+		if err != nil {
+			return nil, err
+		}
+		return user, nil
+	}
 }

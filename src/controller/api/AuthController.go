@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"securechat/backend/src/controller/model"
-	"securechat/backend/src/db/repository"
 	"securechat/backend/src/db/schema"
 	"securechat/backend/src/handler"
 	"securechat/backend/src/service"
@@ -81,48 +80,13 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	token = token[len("Bearer "):]
-	jwtService := service.NewJWTService([]byte(os.Getenv("JWT_SECRET_KEY")), "securechat")
-	_, err := jwtService.ValidateToken(token)
+	user, err := service.ValidateToken(token)
 	if err != nil {
-		id, err := jwtService.ExtractUserIdFromToken(token)
-		if err != nil {
-			handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
-			return
-		}
-		user, err := repository.GetUserByID(id)
-		if err != nil {
-			handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
-			return
-		}
-		_, err = jwtService.ValidateRefreshToken(user.RefreshToken)
-		if err != nil {
-			handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
-			return
-		}
-		token, err = jwtService.GenerateToken(user.Id)
-		if err != nil {
-			handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
-			return
-		}
-		w.Header().Set("Authorization", token)
-		user.Password = ""
-		user.RefreshToken = ""
-		handler.SuccessResponse("Token validated", user, w, http.StatusOK)
-	} else {
-		// Token is valid, get user from token and set in context
-		id, err := jwtService.ExtractUserIdFromToken(token)
-		if err != nil {
-			handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
-			return
-		}
-		user, err := repository.GetUserByID(id)
-		if err != nil {
-			handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
-			return
-		}
-		w.Header().Set("Authorization", token)
-		user.Password = ""
-		user.RefreshToken = ""
-		handler.SuccessResponse("Token validated", user, w, http.StatusOK)
+		handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
+		return
 	}
+	w.Header().Set("Authorization", token)
+	user.Password = ""
+	user.RefreshToken = ""
+	handler.SuccessResponse("Token validated", user, w, http.StatusOK)
 }
