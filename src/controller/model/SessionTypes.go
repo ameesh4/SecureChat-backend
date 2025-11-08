@@ -14,3 +14,7 @@ type CreateSessionRequest struct {
 type RequestSessionRequest struct {
 	Email string `json:"email"`
 }
+
+type GetChatMessagesRequest struct {
+	SessionId uint `json:"session_id"`
+}

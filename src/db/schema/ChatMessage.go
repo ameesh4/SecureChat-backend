@@ -6,6 +6,7 @@ type ChatMessage struct {
 	ReceiverId uint   `gorm:"not null" json:"receiver_id"`
 	Content    string `gorm:"not null" json:"content"`
 	Iv         string `gorm:"not null" json:"iv"`
+	SessionId  uint   `gorm:"not null" json:"session_id"`
 	// MessageType string `gorm:"default:'text'" json:"message_type"`
 	IsRead    bool  `gorm:"default:false" json:"is_read"`
 	CreatedAt int64 `gorm:"autoCreateTime" json:"created_at"`

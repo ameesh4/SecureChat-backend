@@ -14,6 +14,7 @@ func SendMessage(message model.Message) (*schema.ChatMessage, error) {
 	}
 	chatMessage := &schema.ChatMessage{
 		SenderId:   message.SenderId,
+		SessionId:  message.SessionId,
 		ReceiverId: message.ReceiverId,
 		Content:    message.Content,
 		Iv:         message.Iv,
@@ -23,4 +24,16 @@ func SendMessage(message model.Message) (*schema.ChatMessage, error) {
 		return nil, errors.New("failed to send message")
 	}
 	return savedMessage, nil
+}
+
+func GetChatMessages(sessionId uint) ([]schema.ChatMessage, error) {
+	_, err := repository.GetChatSessionByID(sessionId)
+	if err != nil {
+		return nil, errors.New("session not found")
+	}
+	messages, err := repository.GetChatMessagesBySessionID(sessionId, 0, 0)
+	if err != nil {
+		return nil, errors.New("failed to get messages")
+	}
+	return messages, nil
 }

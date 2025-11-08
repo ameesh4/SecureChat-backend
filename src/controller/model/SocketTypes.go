@@ -5,6 +5,7 @@ type AuthRequest struct {
 }
 
 type Message struct {
+	SessionId  uint   `json:"session_id"`
 	SenderId   uint   `json:"sender_id"`
 	ReceiverId uint   `json:"receiver_id"`
 	Content    string `json:"content"`
