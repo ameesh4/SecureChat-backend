@@ -44,3 +44,13 @@ func CreateChatSession(w http.ResponseWriter, r *http.Request) {
 	}
 	handler.SuccessResponse("Chat session created successfully", session, w, http.StatusCreated)
 }
+
+func GetAllChatSessions(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value(middleware.UserContextKey).(*schema.User)
+	sessions, err := service.GetAllChatSessions(user.Id)
+	if err != nil {
+		handler.ErrorResponse("Failed to get all chat sessions", &err, w, http.StatusInternalServerError)
+		return
+	}
+	handler.SuccessResponse("All chat sessions retrieved successfully", sessions, w, http.StatusOK)
+}

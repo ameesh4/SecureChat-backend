@@ -2,6 +2,8 @@ package schema
 
 type User struct {
 	Id           uint   `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name         string `gorm:"" json:"name"`
+	Bio          string `gorm:"" json:"bio"`
 	Email        string `gorm:"unique" json:"email"`
 	Password     string `gorm:"not null" json:"password"`
 	RefreshToken string `gorm:"" json:"refresh_token"`

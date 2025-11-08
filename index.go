@@ -32,7 +32,7 @@ func main() {
 
 	// Register API routes with CORS middleware
 	apiRouter := routes.Router()
-	apiRouter.HandleFunc("/", helloHandler)
+	// apiRouter.HandleFunc("/", helloHandler)
 	mainMux.Handle("/", middleware.CorsMiddleware(apiRouter))
 
 	log.Println("Starting server on :8080")

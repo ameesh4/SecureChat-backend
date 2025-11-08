@@ -14,14 +14,13 @@ type LoginRequest struct {
 }
 
 type RegisterRequest struct {
-	PhoneNumber string `json:"phone_number"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	PublicKey   string `json:"public_key"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	PublicKey string `json:"public_key"`
 }
 
 type UpdateUserRequest struct {
-	PhoneNumber string `json:"phone_number"`
-	Email       string `json:"email"`
-	WorkspaceId string `json:"workspace_id"`
+	Name string `json:"name"`
+	Bio  string `json:"bio"`
 }

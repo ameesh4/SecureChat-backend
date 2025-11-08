@@ -43,3 +43,11 @@ func CreateChatSession(user1 schema.User, request model.CreateSessionRequest) (*
 
 	return session, nil
 }
+
+func GetAllChatSessions(userId uint) ([]schema.ChatSession, error) {
+	sessions, err := repository.GetChatSessionsByUserID(userId)
+	if err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}

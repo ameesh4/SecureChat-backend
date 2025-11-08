@@ -42,6 +42,7 @@ func GetChatSessionsByUserID(userId uint) ([]schema.ChatSession, error) {
 	result := db.DB.Preload("User1").Preload("User2").
 		Where("participant1 = ? OR participant2 = ?", userId, userId).
 		Order("updated_at DESC").
+		Select("id, participant1, participant2, updated_at").
 		Find(&sessions)
 	if result.Error != nil {
 		return nil, result.Error

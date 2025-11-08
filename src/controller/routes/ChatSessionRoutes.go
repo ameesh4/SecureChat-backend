@@ -20,6 +20,12 @@ func ChatSessionRoutes(w http.ResponseWriter, r *http.Request, path string) {
 			return
 		}
 		api.CreateChatSession(w, r)
+	case strings.HasPrefix(path, "/all"):
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		api.GetAllChatSessions(w, r)
 	default:
 		http.NotFound(w, r)
 	}
