@@ -19,6 +19,8 @@ func (s *SocketServer) Close() {
 	s.Server.Close(nil)
 }
 
+var connections = make(map[uint]*socketio.Socket)
+
 // InitializeSocket sets up socket.io and returns a wrapped server instance
 func InitializeSocket() *SocketServer {
 	server := socketio.NewServer(nil, nil)
@@ -53,7 +55,30 @@ func InitializeSocket() *SocketServer {
 					client.Disconnect(true)
 					return
 				}
+				connections[user.Id] = client
 				client.Emit("auth_success", user)
+			}
+		})
+
+		client.On("send_message", func(args ...any) {
+			if len(args) > 0 {
+				var message model.Message
+				msg := args[0].(string)
+				err := json.Unmarshal([]byte(msg), &message)
+				if err != nil {
+					fmt.Println("❌ Error decoding message:", err)
+					return
+				}
+				value, found := connections[message.ReceiverId]
+				if found {
+					value.Emit("new_message", message)
+				}
+				savedMessage, err := service.SendMessage(message)
+				if err != nil {
+					client.Emit("message_error", err.Error())
+					return
+				}
+				client.Emit("message_sent", savedMessage)
 			}
 		})
 
