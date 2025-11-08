@@ -31,3 +31,10 @@ func FindKeysByValueConnections(m map[uint]*socket.Socket, targetValue *socket.S
 	}
 	return keys
 }
+
+func Ternery[T any](condition bool, trueValue T, falseValue T) T {
+	if condition {
+		return trueValue
+	}
+	return falseValue
+}
