@@ -3,10 +3,11 @@ package repository
 import (
 	"securechat/backend/src/db"
 	"securechat/backend/src/db/schema"
+	"securechat/backend/src/utils"
 )
 
 func CreateChatMessage(message *schema.ChatMessage) (*schema.ChatMessage, error) {
-	result := db.DB.Preload("Sender").Preload("Receiver").Create(message)
+	result := db.DB.Preload("Sender").Preload("Receiver", utils.GeneralizeUser).Create(message)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -16,7 +17,7 @@ func CreateChatMessage(message *schema.ChatMessage) (*schema.ChatMessage, error)
 
 func GetChatMessageByID(id uint) (*schema.ChatMessage, error) {
 	var message schema.ChatMessage
-	result := db.DB.Preload("Session").Preload("Sender").First(&message, id)
+	result := db.DB.Preload("Session").Preload("Sender", utils.GeneralizeUser).First(&message, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -26,7 +27,7 @@ func GetChatMessageByID(id uint) (*schema.ChatMessage, error) {
 
 func GetChatMessagesBySessionID(sessionId uint, limit, offset int) ([]schema.ChatMessage, error) {
 	var messages []schema.ChatMessage
-	query := db.DB.
+	query := db.DB.Preload("Sender", utils.GeneralizeUser).Preload("Receiver", utils.GeneralizeUser).
 		Where("session_id = ?", sessionId).
 		Order("created_at ASC")
 
@@ -47,7 +48,8 @@ func GetChatMessagesBySessionID(sessionId uint, limit, offset int) ([]schema.Cha
 
 func GetChatMessagesByUserID(userId uint, limit, offset int) ([]schema.ChatMessage, error) {
 	var messages []schema.ChatMessage
-	query := db.DB.Preload("Session").Preload("Sender").
+	query := db.DB.Preload("Session").Preload("Sender", utils.GeneralizeUser).
+		Preload("Receiver", utils.GeneralizeUser).
 		Where("sender_id = ?", userId).
 		Order("created_at DESC")
 
@@ -104,7 +106,8 @@ func DeleteChatMessage(id uint) error {
 
 func GetUnreadMessagesBySessionID(sessionId uint) ([]schema.ChatMessage, error) {
 	var messages []schema.ChatMessage
-	result := db.DB.Preload("Session").Preload("Sender").
+	result := db.DB.Preload("Session").Preload("Sender", utils.GeneralizeUser).
+		Preload("Receiver", utils.GeneralizeUser).
 		Where("session_id = ? AND is_read = ?", sessionId, false).
 		Order("created_at ASC").
 		Find(&messages)

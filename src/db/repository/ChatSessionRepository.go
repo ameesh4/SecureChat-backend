@@ -61,7 +61,7 @@ func GetChatSessionBetweenUsers(userId1, userId2 uint) (*schema.ChatSession, err
 func GetChatSessionsByUserID(userId uint) ([]schema.ChatSession, error) {
 	var sessions []schema.ChatSession
 
-	result := db.DB.Preload("User1").Preload("User2").
+	result := db.DB.Preload("User1", utils.GeneralizeUser).Preload("User2", utils.GeneralizeUser).
 		Where("participant1 = ? OR participant2 = ?", userId, userId).
 		Order("updated_at DESC").
 		Find(&sessions)
@@ -70,7 +70,7 @@ func GetChatSessionsByUserID(userId uint) ([]schema.ChatSession, error) {
 		return nil, result.Error
 	}
 
-	return utils.GeneralizeSession(sessions, userId), nil
+	return utils.Ternery(len(sessions) > 0, utils.GeneralizeSession(sessions, userId), []schema.ChatSession{}), nil
 }
 
 func UpdateChatSession(session *schema.ChatSession) (*schema.ChatSession, error) {

@@ -6,6 +6,7 @@ import (
 	"securechat/backend/src/db/schema"
 
 	"github.com/zishang520/socket.io/v2/socket"
+	"gorm.io/gorm"
 )
 
 func ValidEmail(email string) bool {
@@ -67,4 +68,8 @@ func GeneralizeSession(sessions []schema.ChatSession, userId1 uint) []schema.Cha
 		generalizedSessions = append(generalizedSessions, *generalizedSession)
 	}
 	return generalizedSessions
+}
+
+func GeneralizeUser(db *gorm.DB) *gorm.DB {
+	return db.Select("id", "name", "email")
 }
