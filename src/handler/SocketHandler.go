@@ -70,8 +70,12 @@ func InitializeSocket() *SocketServer {
 					fmt.Println("❌ Error decoding message:", err)
 					return
 				}
-				senderId := utils.FindKeysByValueConnections(Connections, client)[0]
-				message.SenderId = senderId
+				senderId, err := utils.FindKeysByValueConnections(Connections, client)
+				if err != nil {
+					fmt.Println("❌ Error finding sender ID:", err)
+					return
+				}
+				message.SenderId = senderId[0]
 				savedMessage, err := service.SendMessage(message)
 				if err != nil {
 					client.Emit("message_error", err.Error())

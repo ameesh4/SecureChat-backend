@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"regexp"
 	"securechat/backend/src/db/schema"
 
@@ -23,14 +24,14 @@ func ValidPhoneNumber(phone string) bool {
 	return matched
 }
 
-func FindKeysByValueConnections(m map[uint]*socket.Socket, targetValue *socket.Socket) []uint {
+func FindKeysByValueConnections(m map[uint]*socket.Socket, targetValue *socket.Socket) ([]uint, error) {
 	var keys []uint
 	for k, v := range m {
 		if v == targetValue {
 			keys = append(keys, k)
 		}
 	}
-	return keys
+	return keys, Ternery(len(keys) > 0, nil, errors.New("NOT FOUND"))
 }
 
 func Ternery[T any](condition bool, trueValue T, falseValue T) T {

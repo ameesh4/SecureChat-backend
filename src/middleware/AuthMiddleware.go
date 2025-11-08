@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"os"
 	"securechat/backend/src/db/repository"
@@ -17,7 +18,8 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
 		if token == "" {
-			handler.ErrorResponse("Unauthorized", nil, w, http.StatusUnauthorized)
+			err := errors.New("missing authorization header")
+			handler.ErrorResponse("Unauthorized", &err, w, http.StatusUnauthorized)
 			return
 		}
 		token = token[len("Bearer "):]
