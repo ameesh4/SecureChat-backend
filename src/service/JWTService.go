@@ -2,8 +2,9 @@ package service
 
 import (
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type CustomClaims struct {
@@ -27,7 +28,7 @@ func (J *JWTService) GenerateToken(userId uint) (string, error) {
 	claims := CustomClaims{
 		Id: userId,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)), // 1 hour
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(14 * 24 * time.Hour)), // 14 days
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    J.issuer,
