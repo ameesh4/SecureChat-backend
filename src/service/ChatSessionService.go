@@ -24,6 +24,11 @@ func CreateChatSession(user1 schema.User, request model.CreateSessionRequest) (*
 		return nil, err
 	}
 
+	existingSession, err := repository.GetChatSessionBetweenUsers(user1.Id, user2.Id)
+	if err == nil && existingSession != nil {
+		return existingSession, nil
+	}
+
 	session := &schema.ChatSession{
 		Participant1: user1.Id,
 		Participant2: user2.Id,
