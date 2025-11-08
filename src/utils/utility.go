@@ -2,6 +2,8 @@ package utils
 
 import (
 	"regexp"
+
+	"github.com/zishang520/socket.io/v2/socket"
 )
 
 func ValidEmail(email string) bool {
@@ -18,4 +20,14 @@ func ValidPhoneNumber(phone string) bool {
 		return false
 	}
 	return matched
+}
+
+func FindKeysByValueConnections(m map[uint]*socket.Socket, targetValue *socket.Socket) []uint {
+	var keys []uint
+	for k, v := range m {
+		if v == targetValue {
+			keys = append(keys, k)
+		}
+	}
+	return keys
 }

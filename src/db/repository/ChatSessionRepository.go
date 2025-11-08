@@ -6,7 +6,7 @@ import (
 )
 
 func CreateChatSession(session *schema.ChatSession) (*schema.ChatSession, error) {
-	result := db.DB.Create(session)
+	result := db.DB.Preload("User1").Preload("User2").Create(session)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -27,7 +27,7 @@ func GetChatSessionByID(id uint) (*schema.ChatSession, error) {
 func GetChatSessionBetweenUsers(userId1, userId2 uint) (*schema.ChatSession, error) {
 	var session schema.ChatSession
 	result := db.DB.Preload("User1").Preload("User2").
-		Where("(participant1 = ? AND participant2 = ?) OR (participant1 = ? AND participant2 = ?)", 
+		Where("(participant1 = ? AND participant2 = ?) OR (participant1 = ? AND participant2 = ?)",
 			userId1, userId2, userId2, userId1).
 		First(&session)
 	if result.Error != nil {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"securechat/backend/src/controller/model"
 	"securechat/backend/src/service"
+	"securechat/backend/src/utils"
 
 	socketio "github.com/zishang520/socket.io/v2/socket"
 )
@@ -69,14 +70,16 @@ func InitializeSocket() *SocketServer {
 					fmt.Println("❌ Error decoding message:", err)
 					return
 				}
-				value, found := connections[message.ReceiverId]
-				if found {
-					value.Emit("new_message", message)
-				}
+				senderId := utils.FindKeysByValueConnections(connections, client)[0]
+				message.SenderId = senderId
 				savedMessage, err := service.SendMessage(message)
 				if err != nil {
 					client.Emit("message_error", err.Error())
 					return
+				}
+				value, found := connections[message.ReceiverId]
+				if found {
+					value.Emit("new_message", savedMessage)
 				}
 				client.Emit("message_sent", savedMessage)
 			}
