@@ -1,22 +1,24 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
-	"securechat/backend/src/controller/model"
 	"securechat/backend/src/handler"
 	"securechat/backend/src/service"
+	"strconv"
 )
 
 func GetChatMessages(w http.ResponseWriter, r *http.Request) {
-	var request model.GetChatMessagesRequest
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&request); err != nil {
-		handler.ErrorResponse("Invalid request body", &err, w, http.StatusBadRequest)
+	sessionId := r.URL.Query().Get("session_id")
+	if sessionId == "" {
+		handler.ErrorResponse("Session id is required", nil, w, http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
-	messages, err := service.GetChatMessages(request.SessionId)
+	sessionIdUint, err := strconv.ParseUint(sessionId, 10, 64)
+	if err != nil {
+		handler.ErrorResponse("Invalid session id", &err, w, http.StatusBadRequest)
+		return
+	}
+	messages, err := service.GetChatMessages(uint(sessionIdUint))
 	if err != nil {
 		handler.ErrorResponse("Failed to get chat messages", &err, w, http.StatusInternalServerError)
 		return

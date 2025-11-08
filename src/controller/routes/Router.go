@@ -26,6 +26,7 @@ func Router() *http.ServeMux {
 	mux.Handle("/api/v1/admin/", Chain(middleware.AdminMiddleware)(http.HandlerFunc(apiRouter)))
 	mux.Handle("/api/v1/chat-session/", Chain(middleware.AuthMiddleware)(http.HandlerFunc(apiRouter)))
 	mux.Handle("/api/v1/profile", Chain(middleware.AuthMiddleware)(http.HandlerFunc(apiRouter)))
+	mux.Handle("/api/v1/chat-message", Chain(middleware.AuthMiddleware)(http.HandlerFunc(apiRouter)))
 
 	return mux
 }
@@ -41,6 +42,8 @@ func apiRouter(w http.ResponseWriter, r *http.Request) {
 		ChatSessionRoutes(w, r, strings.TrimPrefix(path, "/chat-session"))
 	case strings.HasPrefix(path, "/profile"):
 		ProfileRoutes(w, r, strings.TrimPrefix(path, "/profile"))
+	case strings.HasPrefix(path, "/chat-message"):
+		ChatMessageRoutes(w, r, strings.TrimPrefix(path, "/chat-message"))
 	default:
 		http.NotFound(w, r)
 	}

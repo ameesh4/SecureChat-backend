@@ -6,7 +6,7 @@ import (
 )
 
 func CreateChatMessage(message *schema.ChatMessage) (*schema.ChatMessage, error) {
-	result := db.DB.Create(message)
+	result := db.DB.Preload("Sender").Preload("Receiver").Create(message)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -26,7 +26,7 @@ func GetChatMessageByID(id uint) (*schema.ChatMessage, error) {
 
 func GetChatMessagesBySessionID(sessionId uint, limit, offset int) ([]schema.ChatMessage, error) {
 	var messages []schema.ChatMessage
-	query := db.DB.Preload("Session").Preload("Sender").
+	query := db.DB.
 		Where("session_id = ?", sessionId).
 		Order("created_at ASC")
 
