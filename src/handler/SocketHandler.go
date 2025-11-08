@@ -96,7 +96,12 @@ func InitializeSocket() *SocketServer {
 
 		// Handle disconnection
 		client.On("disconnect", func(...any) {
-			fmt.Println("❌ Client disconnected:", client.Id())
+			userId, err := utils.FindKeysByValueConnections(Connections, client)
+			if err != nil {
+				fmt.Println("❌ Error finding user ID:", err)
+				return
+			}
+			delete(Connections, userId[0])
 		})
 	})
 
