@@ -20,7 +20,7 @@ func (s *SocketServer) Close() {
 	s.Server.Close(nil)
 }
 
-var connections = make(map[uint]*socketio.Socket)
+var Connections = make(map[uint]*socketio.Socket)
 
 // InitializeSocket sets up socket.io and returns a wrapped server instance
 func InitializeSocket() *SocketServer {
@@ -56,7 +56,7 @@ func InitializeSocket() *SocketServer {
 					client.Disconnect(true)
 					return
 				}
-				connections[user.Id] = client
+				Connections[user.Id] = client
 				client.Emit("auth_success", user)
 			}
 		})
@@ -70,14 +70,14 @@ func InitializeSocket() *SocketServer {
 					fmt.Println("❌ Error decoding message:", err)
 					return
 				}
-				senderId := utils.FindKeysByValueConnections(connections, client)[0]
+				senderId := utils.FindKeysByValueConnections(Connections, client)[0]
 				message.SenderId = senderId
 				savedMessage, err := service.SendMessage(message)
 				if err != nil {
 					client.Emit("message_error", err.Error())
 					return
 				}
-				value, found := connections[message.ReceiverId]
+				value, found := Connections[message.ReceiverId]
 				if found {
 					value.Emit("new_message", savedMessage)
 				}

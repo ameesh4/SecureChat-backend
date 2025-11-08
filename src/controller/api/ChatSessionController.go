@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"securechat/backend/src/controller/model"
+	"securechat/backend/src/db/repository"
 	"securechat/backend/src/db/schema"
 	"securechat/backend/src/handler"
 	"securechat/backend/src/middleware"
@@ -43,6 +44,30 @@ func CreateChatSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	handler.SuccessResponse("Chat session created successfully", session, w, http.StatusCreated)
+
+	second_user, err := repository.GetUserByEmail(request.Email)
+	if err != nil {
+		handler.ErrorResponse("Failed to get second user", &err, w, http.StatusInternalServerError)
+		return
+	}
+
+	user2Socket, found := handler.Connections[second_user.Id]
+
+	if found {
+		session2 := schema.ChatSession{
+			Id:           session.Id,
+			CreatedAt:    session.CreatedAt,
+			UpdatedAt:    session.UpdatedAt,
+			User1:        session.User2,
+			User2:        session.User1,
+			Participant1: session.Participant2,
+			Participant2: session.Participant1,
+			A1:           session.A2,
+			A2:           session.A1,
+		}
+		user2Socket.Emit("new_chat_session", session2)
+	}
+
 }
 
 func GetAllChatSessions(w http.ResponseWriter, r *http.Request) {
